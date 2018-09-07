@@ -17,6 +17,9 @@ nnoremap <silent> <Plug>(perldoc) :<C-u>Perldoc<CR>
 if !exists(':DLOG')
     command -nargs=* DLOG "pass
 endif
+if !exists(':ELOG')
+    command -nargs=* DLOG echoerr <args>
+endif
 
 if has('perl')
     call useperl#ifperl#load(s:thisdir)

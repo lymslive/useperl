@@ -1,0 +1,60 @@
+=item Is
+rw
+ro
+wo
+
+=item Isa
+Int
+Str
+HashRef
+HashRef[
+Num
+ArrayRef
+
+=item Attribute
+default
+is
+isa
+label
+predicate
+metaclass
+label
+expires_after
+refresh_with
+required
+coerce
+does
+required
+weak_ref
+lazy
+auto_deref
+trigger
+handles
+traits
+builder
+clearer
+predicate
+lazy_build
+initializer
+documentation
+
+=item RoleAttr
+alias
+excludes
+
+=item Statement
+extends
+after
+before
+has
+requires
+with
+override
+method
+super
+around
+inner
+augment
+confess
+blessed
+
