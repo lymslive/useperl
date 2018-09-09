@@ -24,11 +24,18 @@ endif
 if has('perl')
     call useperl#ifperl#load(s:thisdir)
 
+    " add the ./lib sub-directory to @INC of perl
+    let s:ifperl = useperl#ifperl#pack()
+    call s:ifperl.uselib(s:thisdir . '/lib')
+    call s:ifperl.require('ifperl.pl')
+
     " command abbreviation
     cabbrev PP PerlPrint
     cabbrev PS PerlSearch
 
     command! -nargs=* PerlSearch call useperl#search#Commander(<q-args>)
+
+    let g:ifperl_log_on = -1
 endif
 
 " Perlomni:

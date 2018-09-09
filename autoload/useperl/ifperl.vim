@@ -191,6 +191,9 @@ endfunction "}}}
 function! useperl#ifperl#pack() abort "{{{
     if !exists('s:pack')
         let s:pack = {}
+        let s:pack.uselib = function('s:uselib')
+        let s:pack.use = function('s:use')
+        let s:pack.require = function('s:require')
         let s:pack.call = function('s:call')
         let s:pack.execute = function('s:execute')
         let s:pack.deal_list = function('s:deal_list')
@@ -200,12 +203,8 @@ function! useperl#ifperl#pack() abort "{{{
 endfunction "}}}
 
 " load: 
-" a:1, add the source directory to @INC of perl
 function! useperl#ifperl#load(...) abort "{{{
-    if a:0 > 0 && !empty(a:1)
-        call s:uselib(a:1)
-    endif
-    PerlFile ifperl.pl
+    return 0
 endfunction "}}}
 
 finish

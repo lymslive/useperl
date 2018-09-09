@@ -4,8 +4,9 @@ tags
 *.o
 *.out
 *.bak
+*.log
 *.pod
 core.*
 Session*.vim
-*.tar.gz
+*.gz
 *.tgz

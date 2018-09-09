@@ -5,32 +5,14 @@
 " Create: 2018-08-29
 " Modify: 2018-08-29
 
+" Note: file import relation
+" perlomni <- rule <- (scanps | scanif <- ifperl) <- (cache & data)
+
 " Package: 
 let s:pack = {}
-function! useperl#perlomni#pack() abort "{{{
+function! useperl#perlomni#pack() abort
     return s:pack
 endfunction
-
-" Check Environment: {{{1
-function! s:findBin(script)
-    let l:thisdir = useperl#plugin#dir()
-    let l:bins = split(globpath(l:thisdir, 'bin/'.a:script), "\n")
-    if len(l:bins) == 0
-        let l:bins = split(globpath(&rtp, 'bin/'.a:script), "\n")
-    endif
-    if len(l:bins) == 0
-        return ''
-    endif
-    return l:bins[0][:-len(a:script)-1]
-endfunction
-
-" find the bin dir (with tail /)
-let s:vimbin = s:findBin('grep-objvar.pl')
-if len(s:vimbin) == 0
-    echo "Not find script in local bin/"
-    echo "Please install scripts to ~/.vim/bin"
-    finish
-endif
 
 " Configurations: {{{1
 function! s:defopt(name,value)
@@ -39,99 +21,15 @@ function! s:defopt(name,value)
     endif
 endfunction
 cal s:defopt('perlomni_enable_ifperl', has('perl'))
+cal s:defopt('perlomni_perl','perl')
+cal s:defopt('perlomni_use_cache',1)
 cal s:defopt('perlomni_cache_expiry',30)
 cal s:defopt('perlomni_max_class_length',40)
 cal s:defopt('perlomni_sort_class_by_lenth',0)
-cal s:defopt('perlomni_use_cache',1)
 cal s:defopt('perlomni_use_perlinc',1)
-cal s:defopt('perlomni_show_hidden_func',0)
-cal s:defopt('perlomni_perl','perl')
+" cal s:defopt('perlomni_show_hidden_func',0)
 cal s:defopt('perlomni_export_functions','1')
-
-" Cache Mechanism: {{{1
-let s:last_cache_ts = localtime()
-let s:cache_expiry =  { }
-let s:cache_last   =  { }
-
-function! s:GetCacheNS(ns,key) "{{{
-    let key = a:ns . "_" . a:key
-    if has_key( s:cache_expiry , key )
-        let expiry = s:cache_expiry[ key ]
-        let last_ts = s:cache_last[ key ]
-    else
-        let expiry = g:perlomni_cache_expiry
-        let last_ts = s:last_cache_ts
-    endif
-
-    if localtime() - last_ts > expiry
-        if has_key( s:cache_expiry , key )
-            let s:cache_last[ key ] = localtime()
-        else
-            let s:last_cache_ts = localtime()
-        endif
-        return 0
-    endif
-
-    if ! g:perlomni_use_cache
-        return 0
-    endif
-    if exists('g:perlomni_cache[key]')
-        return g:perlomni_cache[key]
-    endif
-    return 0
-endfunction "}}}
-let s:pack.GetCacheNS = function('s:GetCacheNS')
-
-function! s:SetCacheNS(ns,key,value) "{{{
-    if ! exists('g:perlomni_cache')
-        let g:perlomni_cache = { }
-    endif
-    let key = a:ns . "_" . a:key
-    let g:perlomni_cache[ key ] = a:value
-    return a:value
-endfunction "}}}
-let s:pack.SetCacheNS = function('s:SetCacheNS')
-
-function! s:SetCacheNSWithExpiry(ns,key,value,exp) "{{{
-    if ! exists('g:perlomni_cache')
-        let g:perlomni_cache = { }
-    endif
-    let key = a:ns . "_" . a:key
-    let g:perlomni_cache[ key ] = a:value
-    let s:cache_expiry[ key ] = a:exp
-    let s:cache_last[ key ] = localtime()
-    return a:value
-endfunction "}}}
-let s:pack.SetCacheNSWithExpiry = function('s:SetCacheNSWithExpiry')
-
-command! PerlOmniCacheClear  :unlet g:perlomni_cache
-
-" ViewCache: 
-function! s:ViewCache(...) abort "{{{
-    if !exists('g:perlomni_cache')
-        echo 'no g:perlomni_cache at all'
-        return
-    endif
-    if a:0 == 0
-        for l:key in sort(keys(g:perlomni_cache))
-            echo l:key
-        endfor
-    else
-        if empty(a:1) || a:1 == '0'
-            echo 'g:perlomni_cache has cached ' . len(g:perlomni_cache) . ' keys'
-        else
-            echo a:1 . ' = ' . string(g:perlomni_cache[a:1])
-        endif
-    endif
-endfunction "}}}
-" ViewCacheComp: 
-function! s:ViewCacheComp(A, L, P) abort "{{{
-    if !exists('g:perlomni_cache')
-        return ''
-    endif
-    return join(keys(g:perlomni_cache), "\n")
-endfunction "}}}
-command! -nargs=* -complete=custom,s:ViewCacheComp PerlOmniCacheView call s:ViewCache(<f-args>)
+cal s:defopt('perlomni_local_lib', ['.', 'lib'])
 
 " Complete API: {{{1
 
@@ -235,20 +133,13 @@ function! PerlComplete(findstart, base) "{{{
                 let l:comp = []
                 if type(rule.comp) == type(function('tr'))
                     let l:comp = call(rule.comp, [basetext, lefttext])
-                else type(rule.comp) == type([])
+                elseif type(rule.comp) == type([])
                     let l:comp = rule.comp
-                end
-                if empty(l:comp)
-                    continue
-                endif
-                if type(l:comp) == type([])
-                    cal extend(b:comps, l:comp)
-                elseif type(l:comp) == type({})
-                    call extend(b:comps, s:toCompHashList(l:comp))
                 else
                     echoerr "Unknown completion handle type"
-                endif
+                end
 
+                cal extend(b:comps, l:comp)
                 if has_key(rule,'only') && rule.only == 1
                     return bwidx
                 endif
@@ -281,25 +172,40 @@ function! s:parseParagraphHead(fromLine) "{{{
     return b:paragraph_head
 endfunction "}}}
 
-" toCompHashList: 
-" a group list of word may share the same menu
-" input: {word => [...], menu => m}
-" output: [{word => w1, menu =>m}, {word => w1, menu =>m}, ..]
-function! s:toCompHashList(dict) abort "{{{
-    let l:words = get(a:dict, 'word', [])
-    if empty(l:words)
-        return []
-    endif
-
-    let l:menu = get(a:dict, 'menu', '')
-    return map( copy(l:words) , '{ "word": v:val , "menu": "'. l:menu .'" }' )
-endfunction "}}}
-
-" Branch By If_perl:
+" Load Rules: {{{1
 if g:perlomni_enable_ifperl
-    :PerlFile perlomni.pl
+    :PerlUse Perlomni
     call useperl#perlomni#hasperl#load()
 else
     call useperl#perlomni#noperl#load()
 endif
 
+" Rule View Command: {{{1
+" ViewRule: 
+function! s:ViewRule(...) abort "{{{
+    if a:0 == 0
+        for l:item in s:rules
+            echo l:item.name
+        endfor
+    else
+        if empty(a:1) || a:1 == '0'
+            echo 'perlomni has rules: ' . len(s:rules)
+        else
+            for l:item in s:rules
+                if l:item.name ==# a:1
+                    echo 'rule: ' . string(l:item)
+                    break
+                endif
+            endfor
+        endif
+    endif
+endfunction "}}}
+" ViewRuleComp: 
+function! s:ViewRuleComp(A, L, P) abort "{{{
+    let l:names = []
+    for l:item in s:rules
+        call add(l:names, l:item.name)
+    endfor
+    return join(l:names, "\n")
+endfunction "}}}
+command! -nargs=* -complete=custom,s:ViewRuleComp PerlOmniRuleView call s:ViewRule(<f-args>)

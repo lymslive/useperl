@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
 # let default main package for vim
-# package ifperl;
+package main;
 use strict;
 use warnings;
 # use VIM;
@@ -56,6 +56,14 @@ sub SearchLine
 #
 ## exchange default global variable of three data type
 #
+sub GetVimVariable
+{
+	my ($name, $default) = @_;
+	$default //= 0;
+	my $cmd = "get(g:, '$name', '$default')";
+	return scalar VIM::Eval($cmd);
+}
+
 sub SetVimVariable
 {
 	my ($name, $val) = @_;
