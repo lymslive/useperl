@@ -304,7 +304,7 @@ function! s:CompObjectMethod(base,context)
     let l:classes = s:SN.scanObjectClass(l:objvarname)
     let l:result = []
     for l:cls in l:classes
-        let l:list = s:SN.scanFunctionFromClass(l:cls)
+        let l:list = s:SN.scanClassFunction(l:cls)
         let l:comp = {'word': l:list, 'menu': l:cls}
         let l:sublist = s:toCompHashList(l:comp, a:base)
         cal extend(l:result, l:sublist)

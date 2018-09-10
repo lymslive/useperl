@@ -173,12 +173,7 @@ function! s:parseParagraphHead(fromLine) "{{{
 endfunction "}}}
 
 " Load Rules: {{{1
-if g:perlomni_enable_ifperl
-    :PerlUse Perlomni
-    call useperl#perlomni#hasperl#load()
-else
-    call useperl#perlomni#noperl#load()
-endif
+call useperl#perlomni#rule#load()
 
 " Rule View Command: {{{1
 " ViewRule: 

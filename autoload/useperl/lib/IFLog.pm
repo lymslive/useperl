@@ -8,7 +8,7 @@ my $logfile = 'log';
 my $fh_log;
 
 # log flag: -1 not open file, 0 not print log, 1 print log
-my $logon = main::GetVimVariable('g:ifperl_log_on', -1)
+my $logon = main::GetVimVariable('g:ifperl_log_on', -1);
 if ($logon >= 0) {
 	eval {
 		$rootdir = VIM::Eval('useperl#plugin#dir()');
@@ -22,7 +22,7 @@ if ($logon >= 0) {
 	$logon = -1 if $@;
 }
 
-END {close $fh_log;}
+END {close $fh_log if $fh_log;}
 
 # log api
 sub send
@@ -32,3 +32,5 @@ sub send
 	print $fh_log $msg, "\n";
 }
 
+1;
+__END__

@@ -18,7 +18,7 @@ if !exists(':DLOG')
     command -nargs=* DLOG "pass
 endif
 if !exists(':ELOG')
-    command -nargs=* DLOG echoerr <args>
+    command -nargs=* ELOG echoerr <args>
 endif
 
 if has('perl')
