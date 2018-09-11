@@ -41,7 +41,7 @@ let s:pack.GetData = function('s:GetData')
 
 " readpod: 
 function! s:readpod(file) abort "{{{
-    if a:file !~ '^[\w]'
+    if a:file !~ '^\w'
         :DLOG 'invalid file name: ' . a:file
         return
     endif

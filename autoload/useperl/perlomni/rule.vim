@@ -52,7 +52,7 @@ function! s:toCompHashList(dict, ...) abort "{{{
     let l:words = copy(l:words)
     if a:0 > 0 && empty(a:1)
         let l:prefix = a:1
-        call filter(l:words,"stridx(v:val,a:string) == 0 && v:val != a:string" )
+        call filter(l:words,"stridx(v:val,a:string) == 0 && v:val != l:string" )
     endif
 
     let l:menu = get(a:dict, 'menu', '')
