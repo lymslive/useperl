@@ -349,12 +349,12 @@ endfunction "}}}
 " scan object belong to which class(es)
 function! s:scanObjectClass(objvarname) abort "{{{
     if exists('b:objvarMapping') && has_key(b:objvarMapping, a:objvarname)
-        return = b:objvarMapping[a:objvarname]
+        return b:objvarMapping[a:objvarname]
     endif
 
     call s:scanObjectVariable(bufnr('%'))
     if exists('b:objvarMapping') && has_key(b:objvarMapping, a:objvarname)
-        return = b:objvarMapping[a:objvarname]
+        return [a:objvarname]
     endif
 
     if !has_key(b:objvarMapping, objvarname)

@@ -57,7 +57,7 @@ let s:pack.AddRule = function('s:rule')
 " b:lcontext : the text before cursor position
 " b:colpos   : cursor position - 1
 " b:lines    : range of scanning
-function! PerlComplete(findstart, base) "{{{
+function! useperl#perlomni#complete(findstart, base) "{{{
     if ! exists('b:lines')
         " max 200 lines , to '$' will be very slow
         let b:lines = getline( 1, 200 )
@@ -156,6 +156,7 @@ function! PerlComplete(findstart, base) "{{{
         return b:comps
     endif
 endfunction "}}}
+let PerlComplete = useperl#perlomni#complete
 " setlocal omnifunc=PerlComplete
 
 " Util Function: {{{1

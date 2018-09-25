@@ -121,7 +121,7 @@ function! s:parsepod(list) abort "{{{
         endif
 
         " switch to new item data
-        let l:key = l:words[1]
+        let l:key = l:words[0]
         let l:start = l:idx
         let l:stop = l:start
     endwhile

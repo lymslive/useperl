@@ -126,6 +126,7 @@ sub GetBuffer
 {
 	my ($arg) = @_;
 	return $main::curbuf unless $arg;
+	$arg = 0 + $arg if $arg =~ '^\d+$';
 	my $buf = (VIM::Buffers($arg))[0];
 	return $buf;
 }
