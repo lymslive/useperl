@@ -78,11 +78,11 @@ let s:pack.GetCache = function('s:GetCache')
 
 function! s:SetCache(value, ...) "{{{
     if !g:perlomni_use_cache
-        return 0
+        return a:value
     endif
 
     if empty(a:value) || a:0 < 1
-        return 0
+        return a:value
     endif
 
     let l:namespace = a:1
@@ -94,7 +94,7 @@ function! s:SetCache(value, ...) "{{{
 
     let key = join(a:000, s:GAP)
     if empty(key)
-        return 0
+        return a:value
     endif
 
     if ! exists('g:perlomni_cache')
@@ -108,7 +108,7 @@ let s:pack.SetCache = function('s:SetCache')
 function! s:SetCacheExpiry(value,exp, ...) "{{{
     let key = join(a:000, s:GAP)
     if empty(key)
-        return 0
+        return a:value
     endif
 
     if ! exists('g:perlomni_cache')

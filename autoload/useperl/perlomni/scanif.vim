@@ -208,7 +208,7 @@ function! s:scanBaseClass(class) "{{{
         return []
     endif
     let l:classes = s:baseClassFromFile(file)
-    return s:omnic.SetCache(classes, 'ClassBased', a:class)
+    return s:dynamic.SetCache(classes, 'ClassBased', a:class)
 endfunction "}}}
 " echo s:scanBaseClass( 'Jifty::Record' )
 

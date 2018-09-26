@@ -57,7 +57,7 @@ let s:pack.AddRule = function('s:rule')
 " b:lcontext : the text before cursor position
 " b:colpos   : cursor position - 1
 " b:lines    : range of scanning
-function! useperl#perlomni#complete(findstart, base) "{{{
+function! PerlComplete(findstart, base) "{{{
     if ! exists('b:lines')
         " max 200 lines , to '$' will be very slow
         let b:lines = getline( 1, 200 )
@@ -81,25 +81,16 @@ function! useperl#perlomni#complete(findstart, base) "{{{
         let first_bwidx = -1
 
         for rule in s:rules
-            let match = matchstr( b:lcontext , rule.backward )
-            if strlen(match) > 0
-                let bwidx   = strridx( b:lcontext , match )
-            else
-                " if backward regexp matched is empty, check if context regexp
-                " is matched ? if yes, set bwidx to length, if not , set to -1
-                if b:lcontext =~ rule.context
-                    let bwidx = strlen(b:lcontext)
-                else
-                    let bwidx = -1
-                endif
-            endif
-
-            " see if there is first matched index
-            if first_bwidx != -1 && first_bwidx != bwidx
+            if b:lcontext !~# rule.backward
                 continue
             endif
 
-            if bwidx == -1
+            " when match empty string bwidx will equals len(b:lcontext)
+            let match = matchstr( b:lcontext , rule.backward )
+            let bwidx = strridx( b:lcontext , match )
+
+            " see if there is first matched index
+            if first_bwidx != -1 && first_bwidx != bwidx
                 continue
             endif
 
@@ -109,9 +100,9 @@ function! useperl#perlomni#complete(findstart, base) "{{{
             let basetext = strpart(b:lcontext,bwidx)
 
             if ( has_key( rule ,'head')
-                        \ && b:paragraph_head =~ rule.head
-                        \ && lefttext =~ rule.context )
-                        \ || ( ! has_key(rule,'head') && lefttext =~ rule.context  )
+                        \ && b:paragraph_head =~# rule.head
+                        \ && lefttext =~# rule.context )
+                        \ || ( ! has_key(rule,'head') && lefttext =~# rule.context  )
 
                 if has_key( rule ,'contains' )
                     let l:text = rule.contains
@@ -156,7 +147,7 @@ function! useperl#perlomni#complete(findstart, base) "{{{
         return b:comps
     endif
 endfunction "}}}
-let PerlComplete = useperl#perlomni#complete
+" let PerlComplete = function('useperl#perlomni#complete')
 " setlocal omnifunc=PerlComplete
 
 " Util Function: {{{1

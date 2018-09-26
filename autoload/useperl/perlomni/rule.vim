@@ -50,7 +50,7 @@ function! s:toCompHashList(dict, ...) abort "{{{
     endif
 
     let l:words = copy(l:words)
-    if a:0 > 0 && empty(a:1)
+    if a:0 > 0 && !empty(a:1)
         let l:prefix = a:1
         call filter(l:words,"stridx(v:val, l:prefix) == 0 && v:val != l:prefix" )
     endif
@@ -81,14 +81,14 @@ let s:REGV.Module = '[a-zA-Z][a-zA-Z0-9:]\+'
 
 " Key Words: {{{
 function! s:CompUnderscoreTokens(base,context)
-    let l:list = s:static.GetData('core.Underscor')
+    let l:list = s:static.GetData('core.Underscore')
     let l:comp = {'word': l:list, 'menu': 'CORE'}
     return s:toCompHashList(l:comp, a:base)
 endfunction
 
 cal s:rule({ 'name' : 'UnderscoreTokens',
             \'only':1,
-            \'context': '\<$',
+            \'context': '$',
             \'backward': '__[A-Z]*$',
             \'comp': function('s:CompUnderscoreTokens') })
 "}}}
@@ -117,12 +117,6 @@ cal s:rule({ 'name' : 'Pod::Sections',
 "}}}
 " Variable:{{{
 
-cal s:rule({ 'name' : 'ObjectSelf',
-            \'only':1,
-            \'context': '^\s*my\s\+\$self' ,
-            \'backward': '\s*=\s\+shift;',
-            \'comp': [ ' = shift;' ] })
-
 function! s:CompVariable(base,context)
     let l:list = s:SN.scanVariable(bufnr('%'))
     let l:comp = {'word': l:list, 'menu': '$scalar'}
@@ -140,8 +134,8 @@ function! s:CompVariable(base,context)
 endfunction
 cal s:rule({ 'name' : 'Variable',
             \'only':1,
-            \'context': '\s*\$$',
-            \'backward': '\<\U\w*$',
+            \'context': '\${\?$',
+            \'backward': '\w*$',
             \'comp': function('s:CompVariable') })
 
 function! s:CompArrayVariable(base,context)
@@ -152,8 +146,8 @@ function! s:CompArrayVariable(base,context)
 endfunction
 cal s:rule({ 'name' : 'ArrayVariable',
             \'only':1,
-            \'context': '@$',
-            \'backward': '\<\U\w\+$',
+            \'context': '@{\?$',
+            \'backward': '\w*$',
             \'comp': function('s:CompArrayVariable') })
 
 function! s:CompHashVariable(base,context)
@@ -164,8 +158,8 @@ function! s:CompHashVariable(base,context)
 endfunction
 cal s:rule({ 'name' : 'HashVariable',
             \'only':1,
-            \'context': '%$',
-            \'backward': '\<\U\w\+$',
+            \'context': '%{\?$',
+            \'backward': '\w*$',
             \'comp': function('s:CompHashVariable') })
 "}}}
 " Class: {{{
@@ -219,7 +213,9 @@ cal s:rule({ 'name' : 'ClassName',
             \'backward': '\<\u[A-Za-z0-9_:]*$',
             \'comp': function('s:CompClassName') } )
 
-cal s:rule({ 'name' : 'ClassName',
+" donot want context match any thing
+" todo: ClassSymbol not only ClassName
+cal s:rule({ 'name' : 'ClassSymbol',
             \'context': '$' ,
             \'backward': '\<\u\w*::[a-zA-Z0-9:]*$',
             \'comp': function('s:CompClassName') } )
@@ -263,11 +259,11 @@ endfunction
 cal s:rule({ 'name' : 'BufferFunction',
             \'only':1,
             \'context': '&$',
-            \'backward': '\<\U\w\+$',
+            \'backward': '\w*$',
             \'comp': function('s:CompBufferFunction') })
 cal s:rule({ 'name' : 'BufferMethod',
             \'context': '\$\(self\|class\)->$',
-            \'backward': '\<\w\+$' ,
+            \'backward': '\w*$' ,
             \'only':1 ,
             \'comp': function('s:CompBufferFunction') })
 
