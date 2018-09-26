@@ -213,12 +213,30 @@ cal s:rule({ 'name' : 'ClassName',
             \'backward': '\<\u[A-Za-z0-9_:]*$',
             \'comp': function('s:CompClassName') } )
 
-" donot want context match any thing
-" todo: ClassSymbol not only ClassName
+" complete symbols as well as class name
+function! s:CompModuleSymbol(base,context)
+    let l:lsClass = s:CompClassName(a:base, a:context)
+
+    let l:lsSplit = split(a:base, '::')
+    if len(l:lsSplit) > 1
+        let l:base = remove(l:lsSplit, -1)
+        let l:module = join(l:lsSplit, '::')
+    else
+        let l:module = l:lsSplit[0]
+        let l:base = ''
+    endif
+
+    let l:lsSymbol = s:SN.scanModuleSymbol(l:module, l:base)
+    call map(l:lsSymbol, 'l:module . "::" . v:val')
+    let l:lsSymbol = s:toCompHashList({'word': l:lsSymbol, 'menu': 'Symbol'})
+
+    return l:lsClass + l:lsSymbol
+endfunction
+
 cal s:rule({ 'name' : 'ClassSymbol',
             \'context': '$' ,
             \'backward': '\<\u\w*::[a-zA-Z0-9:]*$',
-            \'comp': function('s:CompClassName') } )
+            \'comp': function('s:CompModuleSymbol') } )
 "}}}
 " Function:{{{
 function! s:CompFunction(base,context)

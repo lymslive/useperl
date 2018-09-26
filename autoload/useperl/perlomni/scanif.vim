@@ -144,6 +144,17 @@ function! s:scanModuleExportFunctions(class) "{{{
 endfunction "}}}
 " echo s:scanModuleExportFunctions( 'List::MoreUtils' )
 
+" Func: s:scanModuleSymbol 
+function! s:scanModuleSymbol(module, base) abort "{{{
+    let l:code = printf('use %s;', a:module)
+    call s:ifperl.execute(l:code)
+    let l:lsSymbol = split(s:ifperl.call('GotModuleSyms', a:module),"\n")
+    if !empty(a:base)
+        call filter(l:lsSymbol, 'v:val =~# "^" . a:base')
+    endif
+    return l:lsSymbol
+endfunction "}}}
+
 " Cache BufferFunction:
 " scanBufferFunction: 
 function! s:scanBufferFunction(buf) abort "{{{
@@ -335,6 +346,7 @@ let s:_export.scanClassFunction = function('s:scanClassFunction')
 let s:_export.scanCurrentBaseClass = function('s:scanCurrentBaseClass')
 let s:_export.scanHashVariable = function('s:scanHashVariable')
 let s:_export.scanModuleExportFunctions = function('s:scanModuleExportFunctions')
+let s:_export.scanModuleSymbol = function('s:scanModuleSymbol')
 let s:_export.scanModuleImported = function('s:scanModuleImported')
 let s:_export.scanObjectClass = function('s:scanObjectClass')
 let s:_export.scanQString = function('s:scanQString')
