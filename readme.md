@@ -9,13 +9,15 @@
 
 ### PerlOmni 补全
 
-提供了一个补全函数，需自行在 `ftplugin/perl.vim` 中加入类似如下配置启用：
+提供了一个补全函数，可在 `ftplugin/perl.vim` 中加入类似如下配置启用：
 
 ```vim
 setlocal omnifunc=PerlComplete
 ```
 
 补全规则可基于正则表达式灵活扩展。如果 vim 有 `+perl` 编译功能，补全效果更佳。
+
+也已适配 neocomplete 或 deoplete 自动补全插件的补全源。
 
 ## 安装
 

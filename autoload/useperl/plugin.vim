@@ -42,6 +42,11 @@ endif
 " based on: https://github.com/c9s/perlomni.vim
 execute 'source ' . s:thisdir . '/perlomni.vim'
 
+" support neocomplete
+if exists('g:neocomplete#sources#omni#input_patterns')
+    let g:neocomplete#sources#omni#input_patterns.perl = '[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?\|[&$%@]{\?\%(\h\w*\)\?'
+endif
+
 " load: 
 function! useperl#plugin#load() abort "{{{
     return 1
