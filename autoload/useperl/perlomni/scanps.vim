@@ -1,6 +1,6 @@
 " File: scanps
 " Author: lymslive
-" Description: dynamic scan omin complete data with system perl script
+" Description: dynamic scan omni complete data with system perl script
 " Create: 2018-09-07
 " Modify: 2018-09-09
 
@@ -128,7 +128,7 @@ function! s:scanArrayVariable(buf)
     endif
     let l:lines = getbufline(a:buf, 1, '$')
     let result = split(s:system(s:vimbin.'grep-pattern.pl', s:tmpfile(l:lines), '@(\w+)', '|', 'sort', '|', 'uniq'),"\n")
-    return s:dynamic.SetCache(result, 'VarArray', a:base)
+    return s:dynamic.SetCache(result, 'VarArray', a:buf)
 endfunction
 
 function! s:scanHashVariable(buf)
@@ -137,7 +137,7 @@ function! s:scanHashVariable(buf)
         return l:cache
     endif
     let l:lines = getbufline(a:buf, 1, '$')
-    let result = split(s:system(s:vimbin.'grep-pattern.pl', s:tmpfile(a:lines), '%(\w+)', '|', 'sort', '|', 'uniq'),"\n")
+    let result = split(s:system(s:vimbin.'grep-pattern.pl', s:tmpfile(l:lines), '%(\w+)', '|', 'sort', '|', 'uniq'),"\n")
     return s:dynamic.SetCache(result, 'VarHash', a:buf)
 endfunction
 
@@ -199,7 +199,7 @@ function! s:scanModuleExportFunctions(class) "{{{
     cal extend( funcs , split( output ) )
     let output = s:runPerlEval( a:class , printf( 'print join " ",@%s::EXPORT' , a:class ))
     cal extend( funcs , split( output ) )
-    let l:export = uniq(sort(split(funcs)))
+    let l:export = uniq(sort(funcs))
     if empty(l:export)
         return []
     endif
@@ -209,6 +209,15 @@ function! s:scanModuleExportFunctions(class) "{{{
     " return s:dynamic.SetCache(l:cache, 'ModuleExport', a:class)
 endfunction "}}}
 " echo s:scanModuleExportFunctions( 'List::MoreUtils' )
+
+" Func: s:scanModuleSymbol 
+function! s:scanModuleSymbol(module, base) abort "{{{
+    let l:lsSymbol = s:scanModuleExportFunctions(a:module)
+    if !empty(a:base)
+        call filter(l:lsSymbol, 'v:val =~# "^" . a:base')
+    endif
+    return l:lsSymbol
+endfunction "}}}
 
 " Cache BufferFunction:
 " scanBufferFunction: 
@@ -402,6 +411,7 @@ let s:_export.scanClassFunction = function('s:scanClassFunction')
 let s:_export.scanCurrentBaseClass = function('s:scanCurrentBaseClass')
 let s:_export.scanHashVariable = function('s:scanHashVariable')
 let s:_export.scanModuleExportFunctions = function('s:scanModuleExportFunctions')
+let s:_export.scanModuleSymbol = function('s:scanModuleSymbol')
 let s:_export.scanModuleImported = function('s:scanModuleImported')
 let s:_export.scanObjectClass = function('s:scanObjectClass')
 let s:_export.scanQString = function('s:scanQString')
