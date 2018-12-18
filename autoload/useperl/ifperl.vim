@@ -14,6 +14,7 @@ endif
 let g:useperl#ifperl#scalar = ''
 let g:useperl#ifperl#list = []
 let g:useperl#ifperl#dict = {}
+let g:useperl#ifperl#buffer = 'IFPERL.buf'
 
 " UseLib: 
 " :PerlLib path-to-add-INC

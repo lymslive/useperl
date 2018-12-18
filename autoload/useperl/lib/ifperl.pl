@@ -107,7 +107,9 @@ sub ToVimDict
 	my ($hash_ref) = @_;
 	VIM::DoCommand("let g:useperl#ifperl#dict = {}");
 	foreach my $key (keys %$hash_ref) {
-		AddVimList($key, $hash_ref->{$key});
+		$key = single_quote($key);
+		my $val = single_quote($hash_ref->{$key});
+		VIM::DoCommand("let g:useperl#ifperl#dict[$key] = $val");
 	}
 }
 
@@ -129,6 +131,13 @@ sub GetBuffer
 	$arg = 0 + $arg if $arg =~ '^\d+$';
 	my $buf = (VIM::Buffers($arg))[0];
 	return $buf;
+}
+
+sub ToVimBuffer
+{
+    my $bufname = VIM::Eval('g:useperl#ifperl#buffer');
+    my $buf = (VIM::Buffers($bufname))[0];
+    $buf->Append($buf->Count(), @_);
 }
 
 ## Test Function:
