@@ -57,6 +57,7 @@ function! s:PerldocWord(word)
         let s:mode = ''
         setfiletype man
         let s:last_word = a:word
+        normal! gg
     else
         echo 'No documentation found for "' . a:word . '".'
         return -1
